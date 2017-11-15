@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<style>
+    .default { background: pink; }
+    .one { color: green; font-size: 33px; }
+    .two { font-size: 55px; }
+    .three { color: yellow; }
+</style>
+
+<body>
+    <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
+    <div id="app">
+        <h2 v-bind:class="{'default':check}">title1:{{ title1 }}</h2>
+        <label for="input1">修改demo样式</label>
+        <input id="input1" type="checkbox" v-model="check">
+        <p v-bind:class="[classObject, check ? errorClass : '']">demo</p>
+        <input id="input2" type="text" v-model="input" placeholder="请输入..." v-on:keyup.enter="input2Done('Enter','!')">
+        <p>点击次数:{{ total }}</p>
+        <p>输入: {{ input }}</p>
+        <button v-on:click="reverse">Reverse</button>
+        <button v-if="seen" @click="clear">Clear</button>
+        <button-counter v-on:increment="incrementTotal"></button-counter>
+        <button-alert></button-alert>
+        <h2 v-bind:class="classObject">{{ title2 }}</h2>
+        <select v-model="selected">
+            <option value="">选择一个城市</option>
+            <option value="上海">上海</option>
+            <option value="杭州">杭州</option>
+        </select>
+        <br>
+        <p>城市: {{ selected }}</p>
+        <ol>
+            <todo-item v-for="item in todoItems" v-bind:todo="item" v-on:add="incrementTotal"></todo-item>
+        </ol>
+    </div>
+
+    <script>
+        var data = {
+            title1: 'this is title',
+            title2: '下拉选择',
+            check: false,
+            input: '',
+            seen: true,
+            total: 0,
+            selected: '',
+            classObject: {
+                default: true,
+                three: true,
+            },
+            errorClass: {
+                one: true,
+                two: false,
+            },
+            todoItems: [
+                { text: 'Today'},
+                { text: 'Tomorrow'},
+                { text: 'Yesterday'}
+            ]
+        }
+
+        Vue.component('button-counter', {
+            template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
+            data: function () {
+                return {
+                    counter: 0
+                }
+            },
+            methods: {
+                incrementCounter: function () {
+                    this.counter += 1
+                    this.$emit('increment')
+                }
+            },
+        })
+
+        Vue.component('button-alert', {
+            template: '<button v-on:click="greet(\'World\')">Greet</button>',
+            data: function () {
+                return {
+                    date: ' 2017-11-09'
+                }
+            },
+            methods: {
+                greet: function (message) {
+                    alert('Hello ' + message + this.date)
+                }
+            },
+        })
+
+        Vue.component('todo-item', {
+            template: '<li>{{ todo.text }}\<br/>\<button @click="addCount">Add</button>\</li>',
+            props: ['todo'],
+            methods: {
+                addCount: function() {
+                    this.$emit('add')
+                }
+            }
+        })
+
+        new Vue({
+            el: '#app',
+            data: data,
+            methods: {
+                reverse: function() {
+                    this.input = this.input.split('').reverse().join('')
+                    Vue.set(this.data,'count',1)
+                },
+                clear: function() {
+                    this.input = ''
+                },
+                incrementTotal: function () {
+                    this.total += 1
+                },
+                input2Done: function(message1, message2) {
+                    this.input += ' ' + message1 + message2
+                }
+            }
+        });
+    </script>
+</body>
+</html>
